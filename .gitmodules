@@ -1,0 +1,6 @@
+[submodule "Editgrid"]
+	path = Editgrid
+	url = https://github.com/bakpakin/Editgrid.git
+[submodule "hump"]
+	path = hump
+	url = https://github.com/vrld/hump.git
