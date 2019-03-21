@@ -1,9 +1,17 @@
 directions = {
-  "left",
-  "up",
   "right",
   "down",
+  "left",
+  "up",
 }
+
+function dirToRad(dir)
+  for i, d in ipairs(directions) do
+    if d == dir then
+      return math.rad(i * 90)
+    end
+  end
+end
 
 function isWalkable(x, y)
   if not x or not y then
@@ -77,9 +85,9 @@ player = {
 }
 
 soko = player:new({c = {1, 0, 0}})
-snake = player:new({c = {0, 1, 0}})
-ltank = player:new({c = {0, 1, 1}})
-tank = player:new({c = {0.5, 0.5, 0.5}})
+snake = player:new({c = {0, 1, 0}, spr = love.graphics.newImage("assets/snake.png"), direction = "down"})
+ltank = player:new({c = {0, 1, 1}, spr = love.graphics.newImage("assets/ltank256.png")})
+tank = player:new({c = {0.5, 0.5, 0.5}, spr = love.graphics.newImage("assets/tank.png")})
 
 function soko:move(key)
   self.x, self.y = move(key, self.x, self.y)

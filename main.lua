@@ -26,6 +26,8 @@ function love.load()
   level = load_level()
 
   love.keyboard.setKeyRepeat(true)
+
+  love.graphics.setDefaultFilter("nearest", "nearest")
 end
 
 function love.resize(width, height)
@@ -52,7 +54,7 @@ function love.keypressed(key)
 end
 
 function love.draw()
-  love.graphics.scale(5,5)
+  love.graphics.scale(32, 32)
   --editgrid.draw(camera, visuals)
 
   for x = 1, #level do
@@ -61,24 +63,29 @@ function love.draw()
       if tile == 1 then --wall
         love.graphics.setColor(0, 0, 0)
       else
-        love.graphics.setColor(1, 1, 1)
+        love.graphics.setColor(.5, .5, 0)
       end
-      love.graphics.rectangle("fill", x*10, y*10, 10, 10)
+      love.graphics.rectangle("fill", x, y, 1, 1)
     end
   end
 
   for _, player in ipairs(level.players) do
-    love.graphics.setColor(unpack(player.c))
-    love.graphics.rectangle("fill", player.x*10, player.y*10, 10, 10)
+    if player.spr then
+      love.graphics.setColor(1, 1, 1)
+      love.graphics.draw(player.spr, player.x + (player.spr:getWidth()/2) * 0.004, player.y + (player.spr:getHeight()/2) * 0.004, dirToRad(player.direction), 0.004, 0.004, player.spr:getWidth()/2, player.spr:getHeight()/2)
+    else
+      love.graphics.setColor(unpack(player.c))
+      love.graphics.rectangle("fill", player.x, player.y, 1, 1)
+    end
   end
 end
 
 function load_level()
   local level = {}
-  for x = 1, 10 do
+  for x = 1, 16 do
     local row = {}
     table.insert(level, row)
-    for y = 1, 10 do
+    for y = 1, 16 do
       table.insert(row, 0)
     end
   end
