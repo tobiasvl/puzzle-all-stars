@@ -1,82 +1,4 @@
-directions = {
-  "right",
-  "down",
-  "left",
-  "up",
-}
-
-function dirToRad(dir)
-  for i, d in ipairs(directions) do
-    if d == dir then
-      return math.rad(i * 90)
-    end
-  end
-end
-
-function isWalkable(x, y)
-  if not x or not y then
-    return false
-  end
-  if x < 1 or x > #level or y < 1 or y > #level[x] then
-    return false
-  end
-  if level[x] and level[x][y] ~= 0 then
-    return false
-  end
-  for _, player in ipairs(level.players) do
-    if player.x == x and player.y == y then
-      return false
-    end
-  end
-  return true
-end
-
-function move(key, x, y)
-  local new_x, new_y
-  if key == "left" then
-    new_x, new_y = x - 1, y
-  elseif key == "up" then
-    new_x, new_y = x, y - 1
-  elseif key == "right" then
-    new_x, new_y = x + 1, y
-  elseif key == "down" then
-    new_x, new_y = x, y + 1
-  end
-  if isWalkable(new_x, new_y) then
-    return new_x, new_y
-  else
-    return x, y
-  end
-end
-
-function cw(dir)
-  for i, v in ipairs(directions) do
-    if dir == v then
-      return directions[i % #directions + 1]
-    end
-  end
-end
-
-function ccw(dir)
-  for i, v in ipairs(directions) do
-    if dir == v then
-      return directions[(i - 2) % #directions + 1]
-    end
-  end
-end
-
-function opposite(dir)
-  for i, v in ipairs(directions) do
-    if dir == v then
-      return directions[(i + 1) % #directions + 1]
-    end
-  end
-end
-
-
-
-
-player = {
+local player = {
   direction = "up",
   new = function(self, o)
     self.__index = self
@@ -84,39 +6,49 @@ player = {
   end
 }
 
-soko = player:new({c = {1, 0, 0}})
-snake = player:new({c = {0, 1, 0}, spr = love.graphics.newImage("assets/snake.png"), direction = "down"})
-ltank = player:new({c = {0, 1, 1}, spr = love.graphics.newImage("assets/ltank256.png")})
-tank = player:new({c = {0.5, 0.5, 0.5}, spr = love.graphics.newImage("assets/tank.png")})
+local soko = player:new({c = {1, 0, 0}})
+local snake = player:new({spr = love.graphics.newImage("assets/snake.png"), direction = "down"})
+local ltank = player:new({spr = love.graphics.newImage("assets/ltank256.png")})
+local tank = player:new({spr = love.graphics.newImage("assets/tank.png")})
+local stank = player:new({c = {0.5, 0.5, 0.5}, spr = love.graphics.newImage("assets/tank.png")})
 
 function soko:move(key)
-  self.x, self.y = move(key, self.x, self.y)
+  self.x, self.y = self.level:walk(key, self.x, self.y)
+  self.direction = key
 end
 
 function snake:move(key)
-  if key ~= opposite(self.direction) then
+  if key ~= directions:opposite(self.direction) then
+    self.x, self.y = self.level:walk(key, self.x, self.y)
     self.direction = key
-    self.x, self.y = move(key, self.x, self.y)
   end
 end
 
 function ltank:move(key)
   if self.direction == key then
-    self.x, self.y = move(key, self.x, self.y)
+    self.x, self.y = self.level:walk(key, self.x, self.y)
   end
   self.direction = key
 end
 
 function tank:move(key)
   if key == "up" then
-    self.x, self.y = move(self.direction, self.x, self.y)
+    self.x, self.y = self.level:walk(self.direction, self.x, self.y)
   elseif key == "down" then
-    self.x, self.y = move(opposite(self.direction), self.x, self.y)
+    self.x, self.y = self.level:walk(directions:opposite(self.direction), self.x, self.y)
   elseif key == "left" then
-    self.direction = ccw(self.direction)
+    self.direction = directions:ccw(self.direction)
   elseif key == "right" then
-    self.direction = cw(self.direction)
+    self.direction = directions:cw(self.direction)
   end
 end
 
-return {soko = soko, snake = snake, ltank = ltank, tank = tank}
+function stank:move(key)
+  if key == self.direction or key == directions:opposite(self.direction) then
+    self.x, self.y = self.level:walk(key, self.x, self.y)
+  else
+    self.direction = key
+  end
+end
+
+return {soko = soko, snake = snake, ltank = ltank, tank = tank, stank = stank}

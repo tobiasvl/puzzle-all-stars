@@ -1,8 +1,8 @@
 function love.load()
-  editgrid = require "Editgrid.editgrid"
-  Camera = require "hump.camera"
+  --editgrid = require "Editgrid.editgrid"
+  --Camera = require "hump.camera"
 
-  players = require "player"
+  directions = require "directions"
 
   -- cargo
   -- editgrid
@@ -23,7 +23,7 @@ function love.load()
 
   --camera = Camera(player.x, player.y)
 
-  level = load_level()
+  level = require "level"
 
   love.keyboard.setKeyRepeat(true)
 
@@ -37,16 +37,7 @@ function love.update(dt)
 end
 
 function love.keypressed(key)
-  function validDirection(key)
-    for _, v in ipairs(directions) do
-      if v == key then
-        return true
-      end
-    end
-    return false
-  end
-
-  if validDirection(key) then
+  if directions:validDirection(key) then
     for _, player in ipairs(level.players) do
       player:move(key)
     end
@@ -57,45 +48,40 @@ function love.draw()
   love.graphics.scale(32, 32)
   --editgrid.draw(camera, visuals)
 
-  for x = 1, #level do
-    for y = 1, #level[x] do
-      local tile = level[x][y]
-      if tile == 1 then --wall
-        love.graphics.setColor(0, 0, 0)
-      else
-        love.graphics.setColor(.5, .5, 0)
-      end
-      love.graphics.rectangle("fill", x, y, 1, 1)
-    end
-  end
+  level:draw()
 
   for _, player in ipairs(level.players) do
     if player.spr then
-      love.graphics.setColor(1, 1, 1)
-      love.graphics.draw(player.spr, player.x + (player.spr:getWidth()/2) * 0.004, player.y + (player.spr:getHeight()/2) * 0.004, dirToRad(player.direction), 0.004, 0.004, player.spr:getWidth()/2, player.spr:getHeight()/2)
+      if player.c then
+        love.graphics.setColor(unpack(player.c))
+      else
+        love.graphics.setColor(1, 1, 1)
+      end
+      local height = player.spr:getHeight() / 2
+      local width = player.spr:getWidth() / 2
+      local size = 0.004
+      love.graphics.draw(player.spr,
+        player.x + height * size,
+        player.y + width * size,
+        directions:dirToRad(player.direction),
+        size, size, height, width)
     else
       love.graphics.setColor(unpack(player.c))
       love.graphics.rectangle("fill", player.x, player.y, 1, 1)
     end
   end
-end
 
-function load_level()
-  local level = {}
-  for x = 1, 16 do
-    local row = {}
-    table.insert(level, row)
-    for y = 1, 16 do
-      table.insert(row, 0)
+  for _, box in ipairs(level.boxes) do
+    if box.spr then
+      love.graphics.setColor(1, 1, 1)
+      love.graphics.draw(box.spr,
+        box.x + (box.spr:getWidth()/2) * 0.004,
+        box.y + (box.spr:getHeight()/2) * 0.004,
+        dirToRad(box.direction),
+        0.004, 0.004, box.spr:getWidth()/2, box.spr:getHeight()/2)
+    else
+      love.graphics.setColor(unpack(box.c))
+      love.graphics.rectangle("fill", box.x, box.y, 1, 1)
     end
   end
-
-  level.players = {
-    players.soko:new({x = 1, y = 1}),
-    players.snake:new({x = 2, y = 2}),
-    players.ltank:new({x = 3, y = 3}),
-    players.tank:new({x = 4, y = 4}),
-  }
-
-  return level
 end
