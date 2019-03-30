@@ -1,21 +1,30 @@
+local sti = require "Simple-Tiled-Implementation.sti"
+
 local level = {}
 
-function level:isWalkable(x, y)
-  if not x or not y then
-    return false
+level.map = sti("test_level.lua")
+
+function level.map:isWalkable(x, y)
+  for _, layer in ipairs(self.layers) do
+    if layer.name ~= "Sprites" then
+      local tx, ty = self:convertPixelToTile(x, y)
+      -- floor tile coordinates to get whole tiles
+      -- add 1 to get lua indexing
+      tx, ty = math.floor(tx) + 1, math.floor(ty) + 1
+      if not (tx >= 1 and tx <= layer.width and ty >= 1 and ty <= layer.height) then
+        return false
+      elseif self:getTileProperties(layer.name, tx, ty).collide then
+        return false
+      end
+    end
   end
-  if x < 1 or x > #level or y < 1 or y > #level[x] then
-    return false
-  end
-  if level[x] and level[x][y] ~= 0 then
-    return false
-  end
-  for _, player in ipairs(self.players) do
+
+  for _, player in ipairs(self.layers["Sprites"].players) do
     if player.x == x and player.y == y then
       return false
     end
   end
-  for _, box in ipairs(self.boxes) do
+  for _, box in ipairs(self.layers["Sprites"].boxes) do
     if box.x == x and box.y == y then
       return false
     end
@@ -23,64 +32,43 @@ function level:isWalkable(x, y)
   return true
 end
 
-function level:walk(key, x, y)
-  local new_x, new_y
-  if key == "left" then
-    new_x, new_y = x - 1, y
-  elseif key == "up" then
-    new_x, new_y = x, y - 1
-  elseif key == "right" then
-    new_x, new_y = x + 1, y
-  elseif key == "down" then
-    new_x, new_y = x, y + 1
-  end
-
-  for _, box in ipairs(self.boxes) do
-    if box.x == new_x and box.y == new_y then
-      box:move(key, new_x, new_y)
-    end
-  end
-
-  if self:isWalkable(new_x, new_y) then
-    return new_x, new_y
-  else
-    return x, y
-  end
-end
-
-for x = 1, 16 do
-  local row = {}
-  table.insert(level, row)
-  for y = 1, 16 do
-    table.insert(row, 0)
-  end
-end
-
 local players = require "player"
 
-level.players = {
-  players.soko:new({x = 1, y = 1, level = level}),
-  players.snake:new({x = 2, y = 2, level = level}),
-  players.ltank:new({x = 3, y = 3, level = level}),
-  players.tank:new({x = 4, y = 4, level = level}),
-  players.stank:new({x = 1, y = 2, level = level}),
-}
+local layer = level.map:addCustomLayer("Sprites")
 
-level.boxes = {
-  players.soko:new({x = 5, y = 5, c = {.7, .7, .7}, level = level}),
-  players.soko:new({x = 6, y = 6, c = {.7, .7, .7}, level = level})
-}
+layer.players = {}
+layer.boxes = {}
+for k, object in pairs(level.map.objects) do
+  object.y = object.y - 32 -- https://github.com/bjorn/tiled/issues/386
+  if object.name == "box" then
+    object.c = {.7, .7, .7}
+    table.insert(layer.boxes, players.soko:new(object))
+  else
+    table.insert(layer.players, players[object.name]:new(object))
+  end
+end
 
-function level:draw()
-  for x = 1, #self do
-    for y = 1, #self[x] do
-      local tile = self[x][y]
-      if tile == 1 then --wall
-        love.graphics.setColor(0, 0, 0)
+function layer:draw()
+  for _, elements in ipairs({self.players, self.boxes}) do
+    for _, player in ipairs(elements) do
+      if player.spr then
+        if player.c then
+          love.graphics.setColor(unpack(player.c))
+        else
+          love.graphics.setColor(1, 1, 1)
+        end
+        local height = player.spr:getHeight() / 2
+        local width = player.spr:getWidth() / 2
+        local size = 0.125
+        love.graphics.draw(player.spr,
+          player.x + (width * size),
+          player.y + (height * size),
+          directions:dirToRad(player.direction),
+          size, size, height, width)
       else
-        love.graphics.setColor(.5, .5, 0)
+        love.graphics.setColor(unpack(player.c))
+        love.graphics.rectangle("fill", player.x, player.y, 32, 32)
       end
-      love.graphics.rectangle("fill", x, y, 1, 1)
     end
   end
 end
