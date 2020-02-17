@@ -42,7 +42,7 @@ for k, object in pairs(level.map.objects) do
   object.y = object.y - 32 -- https://github.com/bjorn/tiled/issues/386
   if object.name == "box" then
     object.c = {.7, .7, .7}
-    table.insert(layer.boxes, players.soko:new(object))
+    table.insert(layer.boxes, players.box:new(object))
   else
     table.insert(layer.players, players[object.name]:new(object))
   end

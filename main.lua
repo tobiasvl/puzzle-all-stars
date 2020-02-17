@@ -31,7 +31,13 @@ end
 
 function love.keypressed(key)
   if directions:validDirection(key) then
+    local try_again = {}
     for _, player in ipairs(level.map.layers["Sprites"].players) do
+      if not player:move(key) then
+        table.insert(try_again, player)
+      end
+    end
+    for _, player in ipairs(try_again) do
       player:move(key)
     end
   end

@@ -6,7 +6,7 @@ local player = {
   end
 }
 
-function walk(key, x, y)
+function player:walk(key, x, y)
   local new_x, new_y
   if key == "left" then
     new_x, new_y = x - 32, y
@@ -18,62 +18,88 @@ function walk(key, x, y)
     new_x, new_y = x, y + 32
   end
 
-  for _, box in ipairs(level.map.layers["Sprites"].boxes) do
-    if box.x == new_x and box.y == new_y then
-      box:move(key, new_x, new_y)
+  if self.can_push then
+    for _, box in ipairs(level.map.layers["Sprites"].boxes) do
+      if box.x == new_x and box.y == new_y then
+        box:move(key, new_x, new_y)
+      end
     end
   end
 
   if level.map:isWalkable(new_x, new_y) then
-    return new_x, new_y
+    return true, new_x, new_y
   else
-    return x, y
+    return false, x, y
   end
 end
 
-local soko = player:new({c = {1, 0, 0}})
-local snake = player:new({spr = love.graphics.newImage("assets/snake.png")})
-local ltank = player:new({spr = love.graphics.newImage("assets/ltank256.png")})
-local tank = player:new({spr = love.graphics.newImage("assets/tank.png")})
-local stank = player:new({c = {0.5, 0.5, 0.5}, spr = love.graphics.newImage("assets/tank.png")})
+local box = player:new({can_push = false})
+local soko = player:new({c = {1, 0, 0}, can_push = true})
+local snake = player:new({spr = love.graphics.newImage("assets/snake.png"), can_push = true})
+local ltank = player:new({spr = love.graphics.newImage("assets/ltank256.png"), can_push = true})
+local tank = player:new({spr = love.graphics.newImage("assets/tank.png"), can_push = true})
+local stank = player:new({c = {0.5, 0.5, 0.5}, spr = love.graphics.newImage("assets/tank.png"), can_push = true})
 
 function soko:move(key)
-  self.x, self.y = walk(key, self.x, self.y)
+  local moved
+  moved, self.x, self.y = self:walk(key, self.x, self.y)
   self.direction = key
+  return moved
+end
+
+function box:move(key)
+  local moved
+  moved, self.x, self.y = self:walk(key, self.x, self.y)
+  return moved
 end
 
 function snake:move(key)
   if key ~= directions:opposite(self.direction) then
-    self.x, self.y = walk(key, self.x, self.y)
+    local moved
+    moved, self.x, self.y = self:walk(key, self.x, self.y)
     self.direction = key
+    return moved
+  else
+    return true
   end
 end
 
 function ltank:move(key)
+  local moved = false
   if self.direction == key then
-    self.x, self.y = walk(key, self.x, self.y)
+    moved, self.x, self.y = self:walk(key, self.x, self.y)
+  else
+    moved = true
   end
   self.direction = key
+  return moved
 end
 
 function tank:move(key)
+  local moved = false
   if key == "up" then
-    self.x, self.y = walk(self.direction, self.x, self.y)
+    moved, self.x, self.y = self:walk(self.direction, self.x, self.y)
   elseif key == "down" then
-    self.x, self.y = walk(directions:opposite(self.direction), self.x, self.y)
+    moved, self.x, self.y = self:walk(directions:opposite(self.direction), self.x, self.y)
   elseif key == "left" then
     self.direction = directions:ccw(self.direction)
+    moved = true
   elseif key == "right" then
     self.direction = directions:cw(self.direction)
+    moved = true
   end
+  return moved
 end
 
 function stank:move(key)
   if key == self.direction or key == directions:opposite(self.direction) then
-    self.x, self.y = walk(key, self.x, self.y)
+    local moved
+    moved, self.x, self.y = self:walk(key, self.x, self.y)
+    return moved
   else
     self.direction = key
+    return true
   end
 end
 
-return {soko = soko, snake = snake, ltank = ltank, tank = tank, stank = stank}
+return {box = box, soko = soko, snake = snake, ltank = ltank, tank = tank, stank = stank}
