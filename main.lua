@@ -16,7 +16,7 @@ function love.load()
   end
 
   level = require "level"
-  level.map:removeLayer("Object Layer 1")
+  level:load("test_level.lua")
 
   love.keyboard.setKeyRepeat(true)
 
@@ -40,6 +40,8 @@ function love.keypressed(key)
     for _, player in ipairs(try_again) do
       player:move(key)
     end
+  elseif key == "r" then
+    level:reload()
   end
 end
 
