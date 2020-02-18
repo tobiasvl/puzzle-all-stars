@@ -40,6 +40,10 @@ local ltank = player:new({spr = love.graphics.newImage("assets/ltank256.png"), c
 local tank = player:new({spr = love.graphics.newImage("assets/tank.png"), can_push = true})
 local stank = player:new({c = {0.5, 0.5, 0.5}, spr = love.graphics.newImage("assets/tank.png"), can_push = true})
 
+-- a player's moved function should return true if it moved or was stopped by its own innate movement restrictions
+-- otherwise, it should return false if blocked externally (by a wall or another player)
+-- probably not very intuitive but it's only used to retry moving in a second pass
+
 function soko:move(key)
   local moved
   moved, self.x, self.y = self:walk(key, self.x, self.y)
@@ -57,7 +61,9 @@ function snake:move(key)
   if key ~= directions:opposite(self.direction) then
     local moved
     moved, self.x, self.y = self:walk(key, self.x, self.y)
-    self.direction = key
+    if moved then
+      self.direction = key
+    end
     return moved
   else
     return true
