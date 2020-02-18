@@ -31,6 +31,21 @@ end
 
 function love.update(dt)
   collectgarbage("collect")
+
+  local won = true
+  for _, box in ipairs(level.map.layers["Sprites"].boxes) do
+    local tx, ty = level.map:convertPixelToTile(box.x, box.y)
+    -- floor tile coordinates to get whole tiles
+    -- add 1 to get lua indexing
+    tx, ty = math.floor(tx) + 1, math.floor(ty) + 1
+    if level.map.layers["Ground"].data[ty][tx].id ~= 5 then
+      won = false
+    end
+
+    if won then
+      print("hooray")
+    end
+  end
 end
 
 function love.keypressed(key)
