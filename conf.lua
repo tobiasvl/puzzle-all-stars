@@ -29,4 +29,5 @@ function love.conf(t)
   t.modules.joystick = false
   t.modules.physics = false
   t.version = compareLOVEVersion(0, 11, 0) >= 0 and love._version or "0.11.0"
+  t.console = true
 end

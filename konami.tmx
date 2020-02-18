@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="2019.10.30" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="6" height="6" tilewidth="32" tileheight="32" infinite="0" nextlayerid="9" nextobjectid="56">
+ <tileset firstgid="1" name="ltank" tilewidth="32" tileheight="32" tilecount="60" columns="10">
+  <image source="assets/ltank.png" width="320" height="192"/>
+  <tile id="1">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="8">
+   <properties>
+    <property name="die" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="9">
+   <properties>
+    <property name="die" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="10">
+   <properties>
+    <property name="die" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="13">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="14">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="15">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="16">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="17">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="35">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="36">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="37">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="38">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="39">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="40">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="41">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="42">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="43">
+   <properties>
+    <property name="collide" type="bool" value="true"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer id="7" name="Ground" width="6" height="6">
+  <data encoding="csv">
+6,1,1,1,1,1,
+1,1,1,1,1,1,
+1,11,6,1,1,1,
+1,1,1,1,1,1,
+1,1,1,1,1,1,
+1,1,1,1,1,11
+</data>
+ </layer>
+ <layer id="8" name="Walls" width="6" height="6">
+  <data encoding="csv">
+0,0,0,0,0,15,
+15,15,15,0,0,15,
+15,0,0,0,0,15,
+15,15,15,0,15,15,
+15,15,15,0,15,15,
+15,15,15,0,15,15
+</data>
+ </layer>
+ <objectgroup id="2" name="Object Layer 1">
+  <properties>
+   <property name="walkable" type="bool" value="false"/>
+  </properties>
+  <object id="41" name="ltank" gid="2" x="96" y="192" width="32" height="32"/>
+  <object id="42" name="soko" gid="16" x="128" y="96" width="32" height="32"/>
+  <object id="43" name="snake" gid="17" x="96" y="96" width="32" height="32"/>
+  <object id="44" name="box" gid="14" x="96" y="160" width="32" height="32"/>
+  <object id="47" name="box" gid="14" x="64" y="32" width="32" height="32"/>
+ </objectgroup>
+</map>

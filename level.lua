@@ -4,7 +4,7 @@ local level = {}
 
 function level:load(filename)
   self.filename = filename
-  self.map = sti(filename)
+  self.map = sti(filename .. ".lua")
 
   function self.map:isWalkable(x, y)
     for _, layer in ipairs(self.layers) do
@@ -75,7 +75,9 @@ function level:load(filename)
     end
   end
 
-  level.map:removeLayer("Object Layer 1")
+  if self.map.layers["Object Layer 1"] then
+    self.map:removeLayer("Object Layer 1")
+  end
 end
 
 function level:reload()
