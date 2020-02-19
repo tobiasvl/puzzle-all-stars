@@ -17,7 +17,7 @@ function love.load()
   end
 
   level = require "level"
-  level:load("test_level")
+  level:load("konami")
 
   undo_stack = util.stack:new()
 
@@ -63,7 +63,7 @@ function love.keypressed(key)
 
   if directions:validDirection(key) then
     -- store current state in undo stack
-    undo_stack:push(util.deep_copy(level.map))
+    undo_stack:push(util.deep_copy(level.map.layers))
 
     local try_again = {}
     for _, player in ipairs(level.map.layers["Sprites"].players) do
@@ -81,7 +81,7 @@ function love.keypressed(key)
     level:reload()
   elseif (key == "u" or key == "backspace") and #undo_stack > 0 then
     -- FIXME seemingly old maps don't get garbage collected?
-    level.map = undo_stack:pop()
+    level.map.layers = undo_stack:pop()
   elseif (key == "1") then
     level:load("konami")
   elseif (key == "2") then
@@ -90,5 +90,7 @@ function love.keypressed(key)
 end
 
 function love.draw()
-  level.map:draw()
+  local layer = level.map.layers[1]
+  local width, height = layer.width * 32, layer.height * 32
+  level.map:draw((math.floor(love.graphics.getWidth() / 2) - (width / 2)), (math.floor(love.graphics.getHeight() / 2) - (height / 2)))
 end
