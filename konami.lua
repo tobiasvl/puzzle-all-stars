@@ -9,7 +9,7 @@ return {
   tilewidth = 32,
   tileheight = 32,
   nextlayerid = 9,
-  nextobjectid = 56,
+  nextobjectid = 57,
   properties = {},
   tilesets = {
     {
@@ -183,7 +183,7 @@ return {
       data = {
         6, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1,
-        1, 11, 6, 1, 1, 1,
+        1, 1, 6, 1, 1, 1,
         1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 11

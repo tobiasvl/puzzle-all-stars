@@ -33,8 +33,13 @@ function player:walk(key, x, y)
   end
 end
 
-local box = player:new({can_push = false})
-local soko = player:new({c = {1, 0, 0}, can_push = true})
+local box = player:new({spr = love.graphics.newImage("assets/crate_42.png"), can_push = false})
+local soko = player:new({spr_sheet = {
+  love.graphics.newImage("assets/player_17.png"),
+  love.graphics.newImage("assets/player_05.png"),
+  love.graphics.newImage("assets/player_20.png"),
+  love.graphics.newImage("assets/player_08.png"),
+}, can_push = true})
 local snake = player:new({spr = love.graphics.newImage("assets/snake.png"), can_push = true})
 local ltank = player:new({spr = love.graphics.newImage("assets/ltank256.png"), can_push = true})
 local tank = player:new({spr = love.graphics.newImage("assets/tank.png"), can_push = true})

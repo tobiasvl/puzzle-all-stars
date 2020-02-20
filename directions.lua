@@ -5,6 +5,14 @@ local directions = {
   "up",
 }
 
+function directions:dirToIndex(dir)
+  for i, v in ipairs(self) do
+    if dir == v then
+      return i
+    end
+  end
+end
+
 function directions:validDirection(key)
   for _, v in ipairs(directions) do
     if v == key then

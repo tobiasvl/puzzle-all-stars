@@ -21,13 +21,13 @@ function compareLOVEVersion(maj, min, rev)
 end
 
 function love.conf(t)
-  t.window.title = "Puzzle All-Stars"
+  t.window.title = "Soko All-Stars"
   --t.window.icon = "vinnie.png"
-  t.identity = "puzzle-all-stars"
+  t.identity = "soko-all-stars"
   t.window.width = 800
   t.window.height = 600
   t.modules.joystick = false
   t.modules.physics = false
   t.version = compareLOVEVersion(0, 11, 0) >= 0 and love._version or "0.11.0"
-  t.console = true
+  t.console = false
 end

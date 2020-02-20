@@ -40,37 +40,80 @@ function level:load(filename)
 
   layer.players = {}
   layer.boxes = {}
+  layer.texts = {}
   for k, object in pairs(self.map.objects) do
     object.y = object.y - 32 -- https://github.com/bjorn/tiled/issues/386
-    if object.name == "box" then
+    if object.shape == "text" then
+      object.font = love.graphics.newFont(object.properties.size or 12, "normal")
+      table.insert(layer.texts, object)
+    elseif object.name == "box" then
       object.c = {.7, .7, .7}
       table.insert(layer.boxes, players.box:new(object))
     else
-      table.insert(layer.players, players[object.name]:new(object))
+      local new_player = players[object.name]:new(object)
+      table.insert(layer.players, new_player)
+      if object.properties.direction then
+        new_player.direction = object.properties.direction
+      end
     end
   end
 
   function layer:draw()
-    for _, elements in ipairs({self.players, self.boxes}) do
-      for _, player in ipairs(elements) do
-        if player.spr then
-          if player.c then
-            love.graphics.setColor(unpack(player.c))
-          else
-            love.graphics.setColor(1, 1, 1)
-          end
-          local height = player.spr:getHeight() / 2
-          local width = player.spr:getWidth() / 2
-          local size = 0.125
-          love.graphics.draw(player.spr,
-            player.x + (width * size),
-            player.y + (height * size),
-            directions:dirToRad(player.direction),
-            size, size, height, width)
+    for _, text in ipairs(self.texts) do
+      love.graphics.setFont(text.font)
+      love.graphics.setColor(1, 1, 1)
+      love.graphics.printf(text.text, text.x, text.y + 32, text.width, text.halign)
+    end
+
+    for _, box in ipairs(self.boxes) do
+      if box.spr then
+        if box.c then
+          love.graphics.setColor(unpack(box.c))
         else
-          love.graphics.setColor(unpack(player.c))
-          love.graphics.rectangle("fill", player.x, player.y, 32, 32)
+          love.graphics.setColor(1, 1, 1)
         end
+        local height = box.spr:getHeight() / 2
+        local width = box.spr:getWidth() / 2
+        local size = 0.5
+        love.graphics.draw(box.spr,
+          box.x + (width * size),
+          box.y + (height * size),
+          0,
+          size, size, height, width)
+      end
+    end
+    for _, player in ipairs(self.players) do
+      if player.spr then
+        if player.c then
+          love.graphics.setColor(unpack(player.c))
+        else
+          love.graphics.setColor(1, 1, 1)
+        end
+        local height = player.spr:getHeight() / 2
+        local width = player.spr:getWidth() / 2
+        local size = 0.125
+        love.graphics.draw(player.spr,
+          player.x + (width * size),
+          player.y + (height * size),
+          directions:dirToRad(player.direction),
+          size, size, height, width)
+      elseif player.spr_sheet then
+        if player.c then
+          love.graphics.setColor(unpack(player.c))
+        else
+          love.graphics.setColor(1, 1, 1)
+        end
+        local height = player.spr_sheet[1]:getHeight() / 2
+        local width = player.spr_sheet[1]:getWidth() / 2
+        local size = 0.5
+        love.graphics.draw(player.spr_sheet[directions:dirToIndex(player.direction)],
+          player.x + (width * size),
+          player.y + (height * size),
+          0,
+          size, size, height, width)
+      else
+        love.graphics.setColor(unpack(player.c))
+        love.graphics.rectangle("fill", player.x, player.y, 32, 32)
       end
     end
   end
