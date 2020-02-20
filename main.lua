@@ -15,6 +15,8 @@ function love.load()
 
   levels = {
     "konami",
+    "conveyor",
+    "parallel",
   }
 
   level_number = 1
@@ -93,6 +95,15 @@ function play:keypressed(key)
   for k, v in pairs(wasd) do
     if key == k then
       key = v
+    end
+  end
+
+  if key == "1" then
+    level_number = level_number + 1
+    if level_number > #levels then
+      Gamestate.switch(win_state)
+    else
+      Gamestate.switch(play)
     end
   end
 
